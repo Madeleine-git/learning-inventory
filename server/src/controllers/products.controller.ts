@@ -5,16 +5,20 @@ import sql from '../../../src/lib/db';
 export const getProducts = async (req: Request, res: Response) => {
   try {
     const products = await sql`
-      SELECT 
-        p.id,
-        p.name AS curso,
-        p.price AS precio,
-        p.stock AS plazas,
-        c.name AS categoria
-      FROM products p
-      INNER JOIN categories c ON p.category_id = c.id
-      ORDER BY c.name, p.name
-    `;
+    SELECT 
+      p.id,
+      p.name AS curso,
+      p.price AS precio,
+      p.stock AS plazas,
+      p.duration AS duracion,
+      p.level AS nivel,
+      p.rating AS valoracion,
+      p.image_url AS imagen,
+      c.name AS categoria
+    FROM products p
+    INNER JOIN categories c ON p.category_id = c.id
+    ORDER BY c.name, p.name
+  `;
     res.json(products);
   } catch {
     res.status(500).json({ error: 'Error al obtener los cursos' });
@@ -25,7 +29,6 @@ export const getProducts = async (req: Request, res: Response) => {
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const { name, price, stock, category_id } = req.body;
-
     const result = await sql`
       INSERT INTO products (name, price, stock, category_id)
       VALUES (${name}, ${price}, ${stock}, ${category_id})
@@ -33,6 +36,26 @@ export const createProduct = async (req: Request, res: Response) => {
     `;
     res.status(201).json(result[0]);
   } catch {
-    res.status(500).json({ error: 'Error al obtener los cursos' });
+    res.status(500).json({ error: 'Error al crear el curso' });
+  }
+};
+
+// POST - comprar un curso (restar una plaza)
+export const buyProduct = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await sql`
+      UPDATE products
+      SET stock = stock - 1
+      WHERE id = ${id} AND stock > 0
+      RETURNING *
+    `;
+    if (result.length === 0) {
+      res.status(400).json({ error: 'No hay plazas disponibles' });
+      return;
+    }
+    res.json(result[0]);
+  } catch {
+    res.status(500).json({ error: 'Error al procesar la compra' });
   }
 };

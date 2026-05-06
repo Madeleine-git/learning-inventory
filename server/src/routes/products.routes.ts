@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { getProducts, createProduct } from '../controllers/products.controller';
+import { getProducts, createProduct, buyProduct } from '../controllers/products.controller';
 
 const router = Router();
 
-// GET - obtener todos los cursos con su categoría
 router.get('/', getProducts);
-
-// POST - insertar un curso nuevo
 router.post('/', createProduct);
+router.post('/:id/buy', buyProduct);
 
 export default router;

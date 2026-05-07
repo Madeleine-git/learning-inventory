@@ -131,6 +131,49 @@ Ejecuta `sql/schema.sql` en el SQL Editor de Neon para crear las tablas `categor
 ### Datos iniciales
 Ejecuta `sql/seed.sql` para poblar la base de datos con categorías y cursos de ejemplo.
 
+## ORM Tipado — Drizzle ORM
+
+### ¿Por qué usar un ORM en proyectos grandes?
+
+Escribir SQL puro es fundamental para entender los cimientos de las bases de datos. Sin embargo, en proyectos grandes con muchas tablas y equipos de varias personas, los ORMs tipados como Drizzle ofrecen ventajas clave:
+
+| Sin ORM (SQL puro) | Con Drizzle ORM |
+|---|---|
+| Strings de SQL sin verificar | TypeScript verifica los nombres de columnas |
+| Errores en tiempo de ejecución | Errores detectados mientras escribes |
+| Refactorizar es arriesgado | TypeScript avisa en todos los sitios afectados |
+| Más control en consultas complejas | Más seguro en proyectos con muchas tablas |
+
+### Esquema en TypeScript
+
+```typescript
+export const products = pgTable('products', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 150 }).notNull(),
+  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
+  stock: integer('stock').default(0),
+  categoryId: uuid('category_id').notNull(),
+});
+```
+
+### Consulta equivalente al INNER JOIN
+
+SQL puro:
+```sql
+SELECT p.name, p.price, c.name
+FROM products p
+INNER JOIN categories c ON p.category_id = c.id
+```
+
+Con Drizzle ORM:
+```typescript
+const result = await db
+  .select({ curso: products.name, precio: products.price, categoria: categories.name })
+  .from(products)
+  .innerJoin(categories, eq(products.categoryId, categories.id));
+```
+
+El resultado es idéntico, pero Drizzle garantiza en tiempo de compilación que los nombres de tablas y columnas son correctos.
 ---
 
 Desarrollado durante las prácticas en Corner Estudios — Madeleine Urrego — 2026

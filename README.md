@@ -1,227 +1,136 @@
-# 🐾 PetLog — Diario Digital de Mascotas
+# 📚 Learning Inventory
 
-Aplicación web fullstack para el registro y seguimiento de mascotas. Desarrollada como proyecto del ciclo ASIR, permite a los usuarios gestionar el historial médico de sus animales — vacunas, visitas veterinarias y recordatorios — desde cualquier dispositivo, con autenticación segura.
+### La plataforma para gestionar y vender cursos online
 
-**Frontend:** https://petlog-sepia.vercel.app
-**API:** https://petlog-api-173h.onrender.com
-**Swagger/Docs:** https://petlog-api-173h.onrender.com/api/docs
+Aplicación fullstack de inventario de cursos online con base de datos PostgreSQL en Neon, backend Express y frontend React con diseño moderno.
 
----
+## Despliegue
 
-## El problema
-
-Los dueños de mascotas no tienen una forma sencilla de centralizar la información de salud de sus animales. La información queda dispersa entre notas de papel, fotos del móvil y la memoria, lo que dificulta el seguimiento correcto de vacunas, medicaciones y citas veterinarias.
-
-PetLog resuelve esto ofreciendo un registro digital organizado, accesible desde cualquier dispositivo y protegido por autenticación de usuario.
-
----
-
-## Funcionalidades
-
-| Módulo | Descripción |
+| | URL |
 |---|---|
-| Autenticación | Registro y login con email y contraseña. JWT en memoria del cliente, bcrypt en el servidor. |
-| Mascotas | Crear, editar y gestionar múltiples perfiles de mascota por usuario. |
-| Vacunas | Registrar vacunas con fecha administrada y próxima dosis. Estado visual al día / pendiente. |
-| Visitas veterinarias | Historial de visitas con diagnóstico, medicación y notas. |
-| Recordatorios | Avisos de citas, medicación periódica y vacunas pendientes. |
+| **Frontend** | [learning-inventory-nine.vercel.app](https://learning-inventory-nine.vercel.app) |
 
----
+## Características
 
-## Stack tecnológico
+1. Catálogo de cursos con imágenes, valoraciones, duración y nivel
+2. Sistema de matriculación con formulario y descuento de plazas en tiempo real
+3. Filtrado por categorías y modo oscuro
+4. Base de datos PostgreSQL real en Neon con consultas seguras parametrizadas
+5. Login de prueba con gestión de sesión en frontend
 
-| Capa | Tecnología |
-|---|---|
-| Frontend | React 18 + TypeScript + Tailwind CSS |
-| Routing | React Router v6 |
-| Estado global | Context API + custom hooks |
-| Cliente HTTP | Axios con interceptores JWT |
-| Backend | Node.js + Express |
-| Autenticación | JWT + bcrypt |
-| Seguridad | Helmet.js + CORS |
-| Persistencia | Datos en memoria (Repository Pattern) |
-| Documentación API | Swagger / OpenAPI 3.0 |
-| Despliegue frontend | Vercel |
-| Despliegue backend | Render |
-
----
-
-## Arquitectura
-
-El proyecto es un monorepo con frontend y backend en el mismo repositorio, organizados en capas.
-
-```
-petlog/
-├── src/                           # Frontend React
-│   ├── api/                       # Cliente HTTP tipado con Axios
-│   │   ├── client.ts              # Instancia Axios + interceptor JWT
-│   │   ├── auth.api.ts            # Funciones tipadas de autenticación
-│   │   └── pets.api.ts            # Funciones tipadas de mascotas
-│   ├── components/                # Componentes reutilizables y por módulo
-│   ├── context/                   # AuthContext — estado global de sesión
-│   ├── hooks/                     # usePets, usePetDetail, useAuth, useForm
-│   ├── pages/                     # LoginPage, DashboardPage, PetProfilePage
-│   └── types/                     # Interfaces TypeScript compartidas
-│
-└── server/                        # Backend Express
-    └── src/
-        ├── routes/                # Capa de rutas
-        ├── controllers/           # Capa de controladores
-        ├── services/              # Capa de servicios — lógica de negocio
-        ├── repositories/          # Capa de datos — Repository Pattern
-        ├── middleware/            # authMiddleware — verificación JWT
-        └── config/                # Configuración JWT + Swagger
-```
-
-### Flujo de una petición
-
-```
-Usuario → React Page → API Client (Axios + JWT)
-        → Express Router → authMiddleware
-        → Controller → Service → Repository
-        → Respuesta JSON → useState → re-render
-```
-
----
-
-## Seguridad
-
-- Contraseñas cifradas con bcrypt — nunca se almacenan en texto plano.
-- Autenticación mediante JWT firmado con clave secreta en el servidor.
-- Token guardado en memoria del cliente (AuthContext), no en LocalStorage, para evitar ataques XSS.
-- authMiddleware protege todas las rutas privadas — devuelve 401 si el token es inválido o ha expirado.
-- Helmet.js para cabeceras HTTP seguras.
-- CORS configurado para aceptar solo peticiones del frontend en producción.
-
----
-
-## API REST
-
-| Método | Ruta | Auth | Descripción |
-|---|---|---|---|
-| POST | /api/auth/register | No | Registrar usuario |
-| POST | /api/auth/login | No | Iniciar sesión |
-| GET | /api/pets | JWT | Listar mascotas |
-| POST | /api/pets | JWT | Crear mascota |
-| GET | /api/pets/:id | JWT | Obtener mascota |
-| PUT | /api/pets/:id | JWT | Actualizar mascota |
-| DELETE | /api/pets/:id | JWT | Eliminar mascota |
-| GET | /api/pets/:id/vaccines | JWT | Historial de vacunas |
-| POST | /api/pets/:id/vaccines | JWT | Añadir vacuna |
-| GET | /api/pets/:id/visits | JWT | Historial de visitas |
-| POST | /api/pets/:id/visits | JWT | Registrar visita |
-| GET | /api/pets/:id/reminders | JWT | Listar recordatorios |
-| POST | /api/pets/:id/reminders | JWT | Crear recordatorio |
-
-Documentación interactiva disponible en https://petlog-api-173h.onrender.com/api/docs
-
----
-
-## Bonus implementados
-
-| Funcionalidad | Descripción |
-|---|---|
-| Lazy loading | Páginas cargadas bajo demanda con React.lazy y Suspense |
-| Segundo custom hook | useForm — gestión genérica de formularios con validación |
-| Animaciones | Transiciones en modales y hover en tarjetas de mascotas |
-| Drag & drop | Reordenar mascotas en el dashboard arrastrando las tarjetas |
-| Swagger/OpenAPI | Documentación interactiva de la API en /api/docs |
-
----
-
-## 🧪 Testing
-
-Puedes probar la aplicación directamente sin necesidad de registrarte usando estas credenciales de prueba:
-
-**URL:** https://petlog-sepia.vercel.app
-
-| Campo | Valor |
-|---|---|
-| Email | test@petlog.com |
-| Contraseña | test123 |
-
-El usuario de prueba tiene dos mascotas precargadas (Coco y Michi) con vacunas, visitas veterinarias y recordatorios de ejemplo listos para explorar.
-
-> Nota: el backend está en Render con plan gratuito. Si la app tarda en responder la primera vez, espera unos 30 segundos mientras el servidor se reactiva.
-
----
-
-## Instalación local
-
-### Requisitos
-- Node.js 18+
-- npm
+## Tecnologías
 
 ### Frontend
-
-```bash
-git clone https://github.com/Madeleine-git/petlog.git
-cd petlog
-npm install
-npm run dev
-```
+| Tecnología | Uso |
+|---|---|
+| React 18 | Librería de interfaz de usuario |
+| TypeScript | Tipado estático |
+| Tailwind CSS | Estilos y diseño |
+| Vite | Bundler y servidor de desarrollo |
 
 ### Backend
+| Tecnología | Uso |
+|---|---|
+| Node.js | Entorno de ejecución |
+| Express | Framework de servidor HTTP |
+| @neondatabase/serverless | Driver de conexión a PostgreSQL |
+| Vercel API Routes | Endpoints en producción |
+
+### Auxiliares
+| Tecnología | Uso |
+|---|---|
+| Neon | Base de datos PostgreSQL serverless |
+| Vercel | Despliegue del frontend y API |
+| GitHub | Control de versiones |
+
+## Estructura del proyecto
+
+```
+learning-inventory/
+├── api/                            # Vercel API Routes (producción)
+│   └── products/
+│       ├── index.ts                # GET /api/products
+│       └── [id]/
+│           └── buy.ts              # POST /api/products/:id/buy
+├── server/                         # Backend Express (desarrollo local)
+│   └── src/
+│       ├── index.ts                # Punto de entrada del servidor
+│       ├── routes/
+│       │   └── products.routes.ts  # Definición de rutas
+│       └── controllers/
+│           └── products.controller.ts  # Lógica de negocio
+├── src/                            # Frontend React
+│   ├── components/
+│   │   └── ProductList.tsx         # Componente principal
+│   ├── lib/
+│   │   └── db.ts                   # Cliente de base de datos
+│   ├── App.tsx                     # Componente raíz
+│   └── main.tsx                    # Punto de entrada
+├── sql/                            # Scripts de base de datos
+│   ├── schema.sql                  # Definición de tablas
+│   └── seed.sql                    # Datos iniciales
+├── docs/                           # Documentación técnica
+│   ├── arquitectura-datos.md       # Foreign keys y modelo relacional
+│   ├── analisis-sql.md             # INNER JOIN vs LEFT JOIN
+│   └── seguridad-db.md             # Inyección SQL y consultas parametrizadas
+├── index.html                      # HTML principal
+├── vite.config.ts                  # Configuración de Vite
+├── vercel.json                     # Configuración de despliegue
+└── README.md
+```
+
+## Descargar y ejecutar
 
 ```bash
-cd server
+git clone https://github.com/Madeleine-git/learning-inventory.git
+cd learning-inventory
+```
+
+### Instalar dependencias
+
+```bash
 npm install
+```
+
+### Configurar variables de entorno
+
+Crea un archivo `.env.local` en la raíz del proyecto:
+
+```bash
+DATABASE_URL="tu_connection_string_de_neon"
+```
+
+### Ejecutar en local
+
+En una terminal arranca el backend:
+
+```bash
+npx tsx --env-file=.env.local server/src/index.ts
+```
+
+En otra terminal arranca el frontend:
+
+```bash
 npm run dev
 ```
 
-### Variables de entorno
+Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
 
-Crea un fichero .env en la raíz del proyecto:
+## Desplegar en Vercel
 
-```
-VITE_API_URL=http://localhost:4000/api
-```
+1. Importa el repositorio en [vercel.com](https://vercel.com)
+2. Añade la variable de entorno `DATABASE_URL` con tu connection string de Neon
+3. Vercel detecta automáticamente la configuración de Vite
+4. Haz clic en **Deploy**
 
-Crea un fichero .env en server/:
+## Base de datos
 
-```
-JWT_SECRET=tu_clave_secreta
-NODE_ENV=development
-```
+### Esquema
+Ejecuta `sql/schema.sql` en el SQL Editor de Neon para crear las tablas `categories` y `products`.
 
----
-
-## Documentación
-
-| Documento | Descripción |
-|---|---|
-| docs/design.md | Arquitectura y decisiones técnicas |
-| docs/api.md | Endpoints REST con ejemplos |
-| docs/api-client.md | Capa de red y tipos TypeScript |
-| docs/components.md | Componentes React documentados |
-| docs/hooks.md | Custom hooks |
-| docs/context.md | Context API |
-| docs/routing.md | Rutas y navegación |
-| docs/forms.md | Formularios y validación |
-| docs/testing.md | Pruebas manuales |
-| docs/deployment.md | Proceso de despliegue |
-| docs/retrospective.md | Reflexión final |
+### Datos iniciales
+Ejecuta `sql/seed.sql` para poblar la base de datos con categorías y cursos de ejemplo.
 
 ---
 
-## Gestión del proyecto
-
-- Tablero Trello: https://trello.com/b/AmrTLslC/petlog
-- Documentación de gestión: docs/project-management.md
-
----
-
-## Mejoras futuras
-
-- Base de datos real (PostgreSQL o MongoDB) — el Repository Pattern permite la migración sin tocar la capa de servicios.
-- Notificaciones push mediante Service Workers.
-- App móvil con React Native reutilizando la lógica de negocio tipada.
-- Exportar historial médico en PDF.
-- Login con Google (OAuth).
-- Tests automáticos con React Testing Library.
-
----
-
-## Licencia
-
-MIT © 2026
+Desarrollado durante las prácticas en Corner Estudios — Madeleine Urrego — 2026

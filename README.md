@@ -59,11 +59,14 @@ learning-inventory/
 │       │   └── products.routes.ts  # Definición de rutas
 │       └── controllers/
 │           └── products.controller.ts  # Lógica de negocio
-├── src/                            # Frontend React
+├── src/
 │   ├── components/
 │   │   └── ProductList.tsx         # Componente principal
 │   ├── lib/
-│   │   └── db.ts                   # Cliente de base de datos
+│   │   ├── db.ts                   # Cliente de base de datos
+│   │   ├── drizzle.ts              # Cliente Drizzle ORM
+│   │   ├── drizzle-query.ts        # Consulta tipada con Drizzle
+│   │   └── schema.ts               # Esquema Drizzle en TypeScript
 │   ├── App.tsx                     # Componente raíz
 │   └── main.tsx                    # Punto de entrada
 ├── sql/                            # Scripts de base de datos

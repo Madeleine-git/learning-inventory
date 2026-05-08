@@ -7,16 +7,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'POST') {
     try {
       const { id } = req.query;
+      const { nombre, email } = req.body;
+
+      // Restar una plaza
       const result = await sql`
         UPDATE products
         SET stock = stock - 1
         WHERE id = ${id as string} AND stock > 0
         RETURNING *
       `;
+
       if (result.length === 0) {
         res.status(400).json({ error: 'No hay plazas disponibles' });
         return;
       }
+
+      // Guardar la matrícula
+      await sql`
+        INSERT INTO enrollments (nombre, email, product_id)
+        VALUES (${nombre}, ${email}, ${id as string})
+      `;
+
       res.status(200).json(result[0]);
     } catch {
       res.status(500).json({ error: 'Error al procesar la compra' });

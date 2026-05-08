@@ -18,6 +18,15 @@ Aplicación fullstack de inventario de cursos online con base de datos PostgreSQ
 4. Base de datos PostgreSQL real en Neon con consultas seguras parametrizadas
 5. Login de prueba con gestión de sesión en frontend
 
+## Cómo funciona
+
+1. **Los datos viven en Neon** — base de datos PostgreSQL en la nube con las tablas `categories` y `products`
+2. **El frontend pide los datos** — React hace una petición a `/api/products` al cargar la página
+3. **Vercel recibe la petición** — la redirige al archivo `api/products/index.ts`
+4. **La API Route consulta Neon** — el driver `@neondatabase/serverless` ejecuta un `SELECT` con `INNER JOIN`
+5. **Los datos llegan a pantalla** — Neon → API Route → React → usuario
+6. **Al matricularse** — el botón llama a `/api/products/:id/buy` que ejecuta un `UPDATE` en Neon restando una plaza
+
 ## Tecnologías
 
 ### Frontend

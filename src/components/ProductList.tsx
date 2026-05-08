@@ -94,7 +94,11 @@ export default function ProductList() {
     }
     setSubmitting(true);
     try {
-      await fetch(`/api/products/${selectedProduct!.id}/buy`, { method: 'POST' });
+      await fetch(`/api/products/${selectedProduct!.id}/buy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: formData.nombre, email: formData.email })
+      });
       setSuccess(`¡${formData.nombre}, te has matriculado en "${selectedProduct!.curso}"! Recibirás información en ${formData.email}`);
       setSelectedProduct(null);
       fetchProducts();

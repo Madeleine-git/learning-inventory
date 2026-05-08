@@ -40,20 +40,29 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-// POST - comprar un curso (restar una plaza)
+// POST - comprar un curso (restar una plaza y guardar matrícula)
 export const buyProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { nombre, email } = req.body;
+
     const result = await sql`
       UPDATE products
       SET stock = stock - 1
       WHERE id = ${id} AND stock > 0
       RETURNING *
     `;
+
     if (result.length === 0) {
       res.status(400).json({ error: 'No hay plazas disponibles' });
       return;
     }
+
+    await sql`
+      INSERT INTO enrollments (nombre, email, product_id)
+      VALUES (${nombre}, ${email}, ${id})
+    `;
+
     res.json(result[0]);
   } catch {
     res.status(500).json({ error: 'Error al procesar la compra' });

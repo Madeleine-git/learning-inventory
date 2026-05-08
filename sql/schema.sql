@@ -17,3 +17,13 @@ CREATE TABLE products (
     REFERENCES categories(id)
     ON DELETE SET NULL
 );
+
+-- Tabla de matrículas
+CREATE TABLE enrollments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre VARCHAR(150) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  product_id UUID NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

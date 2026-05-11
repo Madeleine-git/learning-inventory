@@ -27,6 +27,35 @@ Aplicación fullstack de inventario de cursos online con base de datos PostgreSQ
 5. **Los datos llegan a pantalla** — Neon → API Route → React → usuario
 6. **Al matricularse** — el botón llama a `/api/products/:id/buy` que ejecuta un `UPDATE` en Neon restando una plaza
 
+## Arquitectura del sistema
+
+La aplicación tiene tres capas separadas que trabajan juntas:
+
+| Capa | Tecnología | Responsabilidad |
+|---|---|---|
+| **Frontend** | React + Vercel | Interfaz de usuario — muestra los datos |
+| **API** | Vercel API Routes | Intermediario — conecta frontend con base de datos |
+| **Base de datos** | Neon (PostgreSQL) | Almacenamiento permanente de datos |
+
+### Flujo de datos
+
+**Al cargar la app:**
+1. El frontend hace una petición `GET /api/products`
+2. La API consulta Neon con un `SELECT` + `INNER JOIN`
+3. Neon devuelve los cursos
+4. El frontend los muestra en pantalla
+
+**Al matricularse:**
+1. El frontend envía nombre, email e ID del curso a `POST /api/buy`
+2. La API ejecuta dos operaciones en Neon:
+   - `UPDATE products SET stock = stock - 1`
+   - `INSERT INTO enrollments`
+3. Los datos quedan guardados permanentemente en Neon
+
+### Ventaja de esta arquitectura
+
+Los datos viven en Neon independientemente del código. Esto significa que puedes añadir, editar o borrar cursos directamente desde el SQL Editor de Neon sin necesidad de tocar el código ni redesplegar en Vercel.
+
 ## Tecnologías
 
 ### Frontend
@@ -52,15 +81,14 @@ Aplicación fullstack de inventario de cursos online con base de datos PostgreSQ
 | Vercel | Despliegue del frontend y API |
 | GitHub | Control de versiones |
 
-## Estructura del proyecto
+## ## Estructura del proyecto
 
 ```
 learning-inventory/
 ├── api/                            # Vercel API Routes (producción)
+│   ├── buy.ts                      # POST /api/buy — matrícula y descuento de plazas
 │   └── products/
-│       ├── index.ts                # GET /api/products
-│       └── [id]/
-│           └── buy.ts              # POST /api/products/:id/buy
+│       └── index.ts                # GET /api/products — listado de cursos
 ├── server/                         # Backend Express (desarrollo local)
 │   └── src/
 │       ├── index.ts                # Punto de entrada del servidor
@@ -68,7 +96,7 @@ learning-inventory/
 │       │   └── products.routes.ts  # Definición de rutas
 │       └── controllers/
 │           └── products.controller.ts  # Lógica de negocio
-├── src/
+├── src/                            # Frontend React
 │   ├── components/
 │   │   └── ProductList.tsx         # Componente principal
 │   ├── lib/
